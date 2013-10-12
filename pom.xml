@@ -24,7 +24,7 @@
 				<enabled>true</enabled>
 			</releases>
 			<snapshots>
-				<enabled>false</enabled>
+				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
@@ -188,6 +188,11 @@
 			<artifactId>gson</artifactId>
 			<version>2.2.3</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.axet</groupId>
+			<artifactId>kaptcha</artifactId>
+			<version>0.0.8</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -198,6 +203,11 @@
 				<configuration>
 					<port>80</port>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.0</version>
 			</plugin>
 		</plugins>
 	</build>

@@ -1,27 +1,23 @@
 package com.dreamer.edu.controller;
 
-import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Random;
+import java.util.Properties;
 
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.patchca.color.SingleColorFactory;
-import org.patchca.filter.predefined.CurvesRippleFilterFactory;
-import org.patchca.filter.predefined.DiffuseRippleFilterFactory;
-import org.patchca.filter.predefined.DoubleRippleFilterFactory;
-import org.patchca.filter.predefined.MarbleRippleFilterFactory;
-import org.patchca.filter.predefined.WobbleRippleFilterFactory;
-import org.patchca.font.RandomFontFactory;
-import org.patchca.service.ConfigurableCaptchaService;
-import org.patchca.utils.encoder.EncoderHelper;
-import org.patchca.word.AdaptiveRandomWordFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.code.kaptcha.Constants;
+import com.google.code.kaptcha.impl.DefaultKaptcha;
+import com.google.code.kaptcha.util.Config;
 
 /**
  * 验证码控制器
@@ -30,6 +26,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 public class CaptchaController extends BaseController {
+    
+    /** 验证码生成器 */
+    @Autowired
+    private DefaultKaptcha captchaProducer;
     
     /**
      * 生成验证码
@@ -43,39 +43,24 @@ public class CaptchaController extends BaseController {
     @RequestMapping("/captcha/{time}")
     @ResponseBody
     public String captcha(@PathVariable(value = "time") String time, HttpServletResponse response, HttpSession session) throws IOException {
-        ConfigurableCaptchaService captchaService = new ConfigurableCaptchaService();
-        AdaptiveRandomWordFactory wordFactory = new AdaptiveRandomWordFactory();
-        wordFactory.setCharacters("abcdefghigklmnopqrstuvxyz1234567890@#$%&*=");
-        wordFactory.setMinLength(4);
-        wordFactory.setMaxLength(4);
-        RandomFontFactory fontFactory = new RandomFontFactory();
-        fontFactory.setMinSize(20);
-        fontFactory.setMaxSize(30);
-        captchaService.setWordFactory(wordFactory);
-        captchaService.setFontFactory(fontFactory);
-        captchaService.setColorFactory(new SingleColorFactory(new Color(0, 0, 255)));
-        captchaService.setWidth(200);
-        captchaService.setHeight(40);
-        int n = new Random().nextInt(5);
-        switch (n) {
-            case 0:
-                captchaService.setFilterFactory(new CurvesRippleFilterFactory(captchaService.getColorFactory()));
-                break;
-            case 1:
-                captchaService.setFilterFactory(new DiffuseRippleFilterFactory());
-                break;
-            case 2:
-                captchaService.setFilterFactory(new DoubleRippleFilterFactory());
-                break;
-            case 3:
-                captchaService.setFilterFactory(new MarbleRippleFilterFactory());
-                break;
-            case 4:
-                captchaService.setFilterFactory(new WobbleRippleFilterFactory());
-                break;
-        }
-        OutputStream os = response.getOutputStream();
-        String captcha = EncoderHelper.getChallangeAndWriteImage(captchaService, "png", os);
+        Properties properties = new Properties();
+        properties.setProperty(Constants.KAPTCHA_IMAGE_WIDTH, "100");
+        properties.setProperty(Constants.KAPTCHA_IMAGE_HEIGHT, "40");
+        properties.setProperty(Constants.KAPTCHA_BORDER, "no");
+        properties.setProperty(Constants.KAPTCHA_BORDER_COLOR, "105,179,90");
+        properties.setProperty(Constants.KAPTCHA_TEXTPRODUCER_FONT_COLOR, "red");
+        properties.setProperty(Constants.KAPTCHA_TEXTPRODUCER_CHAR_LENGTH, "4");
+        properties.setProperty(Constants.KAPTCHA_TEXTPRODUCER_FONT_SIZE, "27");
+        
+        Config config = new Config(properties);
+        captchaProducer.setConfig(config);
+        String captcha = captchaProducer.createText();
+        BufferedImage bi = captchaProducer.createImage(captcha);
+        
+        ServletOutputStream os = response.getOutputStream();
+        
+        // write the data out
+        ImageIO.write(bi, "jpg", os);
         session.setAttribute(time, captcha);
         os.flush();
         os.close();
