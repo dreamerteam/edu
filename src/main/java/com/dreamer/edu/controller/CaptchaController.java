@@ -51,15 +51,11 @@ public class CaptchaController extends BaseController {
         properties.setProperty(Constants.KAPTCHA_TEXTPRODUCER_FONT_COLOR, "red");
         properties.setProperty(Constants.KAPTCHA_TEXTPRODUCER_CHAR_LENGTH, "4");
         properties.setProperty(Constants.KAPTCHA_TEXTPRODUCER_FONT_SIZE, "27");
-        
         Config config = new Config(properties);
         captchaProducer.setConfig(config);
         String captcha = captchaProducer.createText();
         BufferedImage bi = captchaProducer.createImage(captcha);
-        
         ServletOutputStream os = response.getOutputStream();
-        
-        // write the data out
         ImageIO.write(bi, "jpg", os);
         session.setAttribute(time, captcha);
         os.flush();
