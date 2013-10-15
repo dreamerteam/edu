@@ -13,9 +13,9 @@
 		<label style="float: right;">当前时间：<span id="time"></span></label>
 	</div>
 	<div id="nav" class="easyui-tabs">
-		<div title="首页" id="homeNav" style="padding: 20px;"></div>
-		<div title="教师管理" id="teacherNav" style="padding: 20px;"></div>
-		<div title="课程管理" id="courseNav" style="padding: 20px;"></div>
+		<div title="首页" id="homeNav" style="padding: 20px;" data-options="${param.leftPage eq 'home' ? 'selected:true' : '' }"></div>
+		<div title="教师管理" id="teacherNav" style="padding: 20px;" data-options="${param.leftPage eq 'teacher' ? 'selected:true' : '' }"></div>
+		<div title="课程管理" id="courseNav" style="padding: 20px;" data-options="${param.leftPage eq 'course' ? 'selected:true' : '' }"></div>
 	</div>
 </body>
 <script type="text/javascript" src="${contextPath }/common/easyui/js/jquery.min.js" ></script>

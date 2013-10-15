@@ -15,7 +15,7 @@
 	<div region="north" style="height:120px;overflow: hidden;">
 		<jsp:include page="/WEB-INF/views/include/top.jsp"></jsp:include>
 	</div>  
-    <div region="west" title="首页" split="true" style="width:200px;" id="left" cache=false>
+    <div region="west" title="${param.leftPage eq 'home' ? '首页' : param.leftPage eq 'teacher' ? '教师管理' : param.leftPage eq 'course' ? '课程管理' : ''}" split="true" style="width:200px;" id="left">
     	<c:choose>
     		<c:when test="${param.leftPage eq 'home' }">
     			<jsp:include page="/WEB-INF/views/include/left_home.jsp"></jsp:include>
